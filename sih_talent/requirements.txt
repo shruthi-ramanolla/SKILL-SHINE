@@ -1,0 +1,14 @@
+﻿flask
+flask_sqlalchemy
+werkzeug
+opencv-python
+mediapipe
+librosa
+soundfile
+numpy
+scipy
+pillow
+python-dotenv
+flask_migrate
+reportlab
+

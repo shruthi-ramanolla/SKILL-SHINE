@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Home – SkillShine{% endblock %}
+
+{% block content %}
+<!-- ✅ Hero Section -->
+<section class="text-center py-12">
+    <img src="{{ url_for('static', filename='images/skillshine_logo.png') }}" 
+         alt="SkillShine Logo" 
+         class="h-20 mx-auto mb-6 rounded-md shadow-md object-contain">
+
+    <h1 class="text-4xl font-bold text-blue-700 mb-4">Welcome to SkillShine</h1>
+    <p class="text-lg text-gray-700 mb-6 max-w-2xl mx-auto">
+        Discover your hidden talent and let AI help you improve your skills. 
+        Upload your performance, get instant feedback, and climb the leaderboard!
+    </p>
+    <a href="{{ url_for('upload_page') }}" 
+       class="bg-blue-600 text-white px-6 py-3 rounded-lg shadow hover:bg-blue-700 transition">
+       Get Started
+    </a>
+</section>
+
+<!-- ✅ Featured Sections -->
+<section class="grid grid-cols-1 md:grid-cols-4 gap-8 mt-12">
+    <div class="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition">
+        <img src="{{ url_for('static', filename='images/talent.jpg') }}" 
+             alt="Talent" class="w-full h-48 object-cover rounded-lg mb-4">
+        <h2 class="text-xl font-semibold text-gray-800">Showcase Your Talent</h2>
+        <p class="text-gray-600 mt-2">
+            Upload videos, audio, or images to get instant AI-powered analysis and improve faster.
+        </p>
+    </div>
+
+    <div class="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition">
+        <img src="{{ url_for('static', filename='images/leaderboard.jpg') }}" 
+             alt="Leaderboard" class="w-full h-48 object-cover rounded-lg mb-4">
+        <h2 class="text-xl font-semibold text-gray-800">Compete & Win Badges</h2>
+        <p class="text-gray-600 mt-2">
+            See how you rank against others and earn special achievement badges.
+        </p>
+    </div>
+
+    <div class="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition">
+        <img src="{{ url_for('static', filename='images/practice.jpg') }}" 
+             alt="Practice" class="w-full h-48 object-cover rounded-lg mb-4">
+        <h2 class="text-xl font-semibold text-gray-800">Practice & Improve</h2>
+        <p class="text-gray-600 mt-2">
+            Get exercises and tips to practice your skill and improve step by step.
+        </p>
+    </div>
+
+    <div class="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition">
+        <img src="{{ url_for('static', filename='images/community.jpg') }}" 
+             alt="Community" class="w-full h-48 object-cover rounded-lg mb-4">
+        <h2 class="text-xl font-semibold text-gray-800">Join the Community</h2>
+        <p class="text-gray-600 mt-2">
+            Connect with others, share your journey, and grow together.
+        </p>
+    </div>
+</section>
+
+<!-- ✅ About Section -->
+
+<section class="mt-16 text-center max-w-3xl mx-auto">
+    <h2 class="text-3xl font-bold text-blue-700 mb-4">About SkillShine</h2>
+    <p class="text-gray-700 text-lg mb-6">
+        SkillShine is an AI-powered talent discovery platform designed to help 
+        students, creators, and performers showcase their skills and improve 
+        continuously. Whether you're an artist, athlete, or speaker — we help 
+        you shine!
+    </p>
+
+    <!-- How It Works -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+        <div class="bg-blue-50 p-6 rounded-xl shadow">
+            <h3 class="text-xl font-semibold text-blue-700 mb-2">1. Upload</h3>
+            <p class="text-gray-600">Upload your video, audio, or image for analysis.</p>
+        </div>
+        <div class="bg-blue-50 p-6 rounded-xl shadow">
+            <h3 class="text-xl font-semibold text-blue-700 mb-2">2. Get Feedback</h3>
+            <p class="text-gray-600">Receive instant AI-powered performance feedback.</p>
+        </div>
+        <div class="bg-blue-50 p-6 rounded-xl shadow">
+            <h3 class="text-xl font-semibold text-blue-700 mb-2">3. Improve & Compete</h3>
+            <p class="text-gray-600">Practice, improve, and climb the leaderboard!</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

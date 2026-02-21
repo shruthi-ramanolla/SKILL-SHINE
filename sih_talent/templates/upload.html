@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white p-6 rounded-2xl shadow-lg">
+
+  <!-- ✅ Logo + Branding -->
+  <div class="flex items-center justify-center mb-6">
+    <img src="{{ url_for('static', filename='images/skillshine_logo.png') }}" 
+         alt="SkillShine Logo" 
+         class="h-12 w-auto rounded-md shadow-md mr-2">
+    <h2 class="text-3xl font-bold text-indigo-700">SkillShine</h2>
+  </div>
+
+  <!-- ✅ Welcome Message -->
+  <div id="welcomeBox" class="text-center mb-4 hidden">
+    <p class="text-lg font-semibold text-green-700">
+      👋 Welcome, <span id="usernameDisplay"></span>! You are logged in.
+    </p>
+  </div>
+
+  <!-- ✅ Heading -->
+  <h3 class="text-xl font-semibold text-center mb-2">Upload Your Talent 🎯</h3>
+  <p class="text-center text-gray-600 text-sm mb-4">
+    Showcase your talent in <strong>Dance</strong>, <strong>Sports</strong>, <strong>Singing</strong>, or <strong>Art</strong>.  
+    Our AI will analyze & give instant feedback + tips!
+  </p>
+
+  <!-- ✅ Talent Type Selector -->
+  <div class="mb-4">
+    <label class="font-semibold">Select Talent Type</label>
+    <select id="talent_type" class="w-full p-2 border rounded mt-1">
+      <option value="dance">💃 Dance</option>
+      <option value="sports">⚽ Sports</option>
+      <option value="singing">🎤 Singing</option>
+      <option value="art">🎨 Art</option>
+    </select>
+  </div>
+
+  <!-- ✅ Drag & Drop / File Upload -->
+  <div class="border-2 border-dashed border-indigo-300 rounded-xl p-6 text-center mb-4 bg-indigo-50 hover:bg-indigo-100 cursor-pointer"
+       onclick="document.getElementById('file').click()">
+    <input type="file" id="file" class="hidden" />
+    <p class="text-gray-700"><strong>Drag & drop</strong> or click to upload video/audio</p>
+    <p class="text-xs text-gray-500">Supported: .mp4, .mp3, .wav (Max 50MB)</p>
+  </div>
+
+  <!-- ✅ Upload Button -->
+  <button id="uploadBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold w-full py-3 rounded-lg">
+    ⬆️ Upload & Analyze
+  </button>
+
+  <!-- ✅ Progress Loader -->
+  <div id="progress" class="hidden mt-4 text-center text-indigo-600 font-semibold animate-pulse">
+    ⏳ Analyzing your talent...
+  </div>
+
+  <!-- ✅ Result Card -->
+  <div id="resultCard" class="hidden mt-6 p-6 rounded-xl shadow-lg bg-gradient-to-r from-blue-50 to-purple-50 border border-purple-200">
+    <h4 class="text-2xl font-extrabold text-purple-700 mb-2">🎯 AI Result</h4>
+    
+    <p class="text-lg font-bold">
+      🏆 <span class="text-purple-700">Score:</span>
+      <span id="scoreText" class="text-2xl"></span>
+    </p>
+
+    <p class="mt-2 text-lg text-gray-700">
+      💡 <span class="font-semibold">Feedback:</span>
+      <span id="feedbackText"></span>
+    </p>
+
+    <div id="suggestionBox" class="mt-3 text-base font-semibold"></div>
+
+    <!-- ✅ Download button (only visible if score >= 85) -->
+    <a id="downloadBtn" 
+       href="#" 
+       class="hidden mt-4 inline-block bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-2 rounded-lg shadow">
+       ⬇ Download Report
+    </a>
+  </div>
+</div>
+
+<!-- ✅ Script -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const token = sessionStorage.getItem("token");
+  const username = sessionStorage.getItem("username");
+
+  // ✅ Show welcome message if logged in
+  if (token) {
+    document.getElementById("welcomeBox").classList.remove("hidden");
+    document.getElementById("usernameDisplay").textContent = username || "User";
+  }
+});
+
+document.getElementById('uploadBtn').addEventListener('click', async () => {
+  const token = sessionStorage.getItem('token');
+  if (!token) { alert('Please login first'); return; }
+
+  const fileInput = document.getElementById('file');
+  if (!fileInput.files.length) { alert('Please choose a file first!'); return; }
+
+  const f = fileInput.files[0];
+  const talent_type = document.getElementById('talent_type').value;
+  const fd = new FormData();
+  fd.append('file', f);
+  fd.append('talent_type', talent_type);
+
+  // Show progress
+  document.getElementById('progress').classList.remove('hidden');
+  document.getElementById('resultCard').classList.add('hidden');
+
+  try {
+    const res = await fetch('/api/upload', {
+      method: 'POST',
+      headers: { 'Authorization': token },
+      body: fd
+    });
+    const data = await res.json();
+
+    // Hide progress, show result
+    document.getElementById('progress').classList.add('hidden');
+    document.getElementById('resultCard').classList.remove('hidden');
+
+    // Fill results
+    document.getElementById('scoreText').innerText = `${data.score}/100`;
+    document.getElementById('feedbackText').innerText = data.feedback;
+
+    const suggestionBox = document.getElementById('suggestionBox');
+    const downloadBtn = document.getElementById('downloadBtn');
+
+    if (data.score >= 85) {
+      suggestionBox.innerHTML = "🔥 <span class='text-green-700'>Excellent performance! Keep shining!</span>";
+      downloadBtn.classList.remove('hidden');
+      downloadBtn.href = `/download_report?score=${data.score}`;
+    } else if (data.score >= 70) {
+      suggestionBox.innerHTML = "👏 <span class='text-yellow-600'>Great effort! Focus on consistency and you'll shine.</span>";
+      downloadBtn.classList.add('hidden');
+    } else {
+      suggestionBox.innerHTML = "💡 <span class='text-red-600'>Don't worry! Practice daily 10 mins & try again — you will improve!</span>";
+      downloadBtn.classList.add('hidden');
+    }
+
+  } catch (err) {
+    alert("Upload failed. Please try again.");
+    document.getElementById('progress').classList.add('hidden');
+  }
+});
+</script>
+{% endblock %}

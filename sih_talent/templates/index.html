@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Welcome to SkillShine{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto mt-12 text-center">
+
+    <!-- Hero Section -->
+    <h1 class="text-4xl font-extrabold text-purple-700 leading-snug">
+        🚀 Welcome to <span class="text-blue-700">SkillShine</span>
+    </h1>
+    <p class="text-lg text-gray-600 mt-4">
+        Your personal AI-powered talent showcase and skill growth platform. 
+        Upload videos, get instant AI feedback, and unlock achievements as you grow.
+    </p>
+
+    <!-- CTA Buttons -->
+    <div class="flex justify-center space-x-4 mt-6">
+        <a href="{{ url_for('upload_page') }}" 
+           class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-full shadow">
+           📤 Upload Talent
+        </a>
+        <a href="{{ url_for('dashboard_page') }}" 
+           class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full shadow">
+           📊 Go to Dashboard
+        </a>
+    </div>
+
+    <!-- Features Section -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+        <div class="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition">
+            <h3 class="text-xl font-bold text-purple-700 mb-2">AI Feedback</h3>
+            <p class="text-gray-600">Get instant, AI-driven feedback on your performance to improve faster.</p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition">
+            <h3 class="text-xl font-bold text-blue-700 mb-2">Leaderboard</h3>
+            <p class="text-gray-600">See where you stand and compete with others to reach the top.</p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition">
+            <h3 class="text-xl font-bold text-green-700 mb-2">Earn Badges</h3>
+            <p class="text-gray-600">Unlock exciting badges as you achieve higher scores and milestones.</p>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,8 @@
+.venv/
+venv310/
+__pycache__/
+*.pyc
+instance/
+uploads/
+.env
+.vscode/

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}SkillShine – AI Talent Platform{% endblock %}</title>
+
+    <!-- ✅ TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- ✅ Bootstrap (Optional) -->
+    <link 
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" 
+      rel="stylesheet"
+      crossorigin="anonymous">
+
+    <!-- ✅ Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+    <!-- ✅ Custom JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+    <!-- ✅ Navbar -->
+    <nav class="bg-white shadow-md sticky top-0 z-10">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            
+            <!-- ✅ Logo + Brand -->
+            <a href="{{ url_for('index') }}" class="flex items-center space-x-3">
+                <img src="{{ url_for('static', filename='images/skillshine_logo.png') }}" 
+                     alt="SkillShine Logo✨" 
+                     class="h-14 w-auto rounded-md shadow-md object-contain">
+                <span class="font-bold text-2xl text-blue-700">SkillShine</span>
+            </a>
+
+            <!-- ✅ Navigation Links -->
+            <div class="hidden md:flex space-x-6 text-gray-700 font-medium">
+                <a href="{{ url_for('index') }}" class="hover:text-blue-600">Home</a>
+                <a href="{{ url_for('dashboard_page') }}" class="hover:text-blue-600">Dashboard</a>
+                <a href="{{ url_for('upload_page') }}" class="hover:text-blue-600">Upload</a>
+                <a href="{{ url_for('badges_page') }}" class="hover:text-blue-600">Badges</a>
+                <a href="{{ url_for('download_all_uploads') }}" class="hover:text-blue-600">Download</a>
+
+                {% if session.get("user_id") %}
+                <a href="{{ url_for('logout') }}" class="text-red-600 hover:underline">Logout</a>
+                {% else %}
+                <a href="{{ url_for('login') }}" class="hover:text-blue-600">Login</a>
+                <a href="{{ url_for('register_page') }}" class="hover:text-blue-600">Register</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- ✅ Main Content Block -->
+    <main class="flex-1 container mx-auto p-6">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- ✅ Footer -->
+    <footer class="bg-gray-100 text-center py-4 text-gray-600 text-sm border-t">
+        © 2025 <strong>SkillShine</strong> · Built with Flask + AI · Empowering Students Everywhere 🌍
+    </footer>
+
+    <!-- ✅ Bootstrap JS (Optional) -->
+    <script 
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" 
+      crossorigin="anonymous"></script>
+</body>
+</html>

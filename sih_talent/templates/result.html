@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+{% block title %}Results – SkillShine{% endblock %}
+
+{% block content %}
+<div class="bg-white p-6 rounded-2xl shadow-lg max-w-3xl mx-auto space-y-8">
+
+    <!-- Heading -->
+    <h2 class="text-3xl font-extrabold text-center text-blue-700 tracking-wide">
+        🎯 Your Performance Report
+    </h2>
+
+    <!-- Loading + Messages -->
+    <div id="loading" class="text-center text-gray-500">⏳ Fetching your results...</div>
+    <div id="error" class="hidden text-center text-red-600 font-semibold"></div>
+
+    <!-- Results Section (hidden until data is loaded) -->
+    <div id="results" class="hidden space-y-6">
+
+        <!-- Video Preview -->
+        <div id="videoContainer" class="hidden relative">
+            <video controls class="rounded-xl w-full shadow-md">
+                <source id="videoSource" src="" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <span class="absolute top-2 left-2 bg-blue-600 text-white text-xs px-3 py-1 rounded-full shadow">
+                Uploaded Talent
+            </span>
+        </div>
+
+        <!-- AI Score + Feedback -->
+        <div class="bg-blue-50 p-5 rounded-xl border border-blue-200 shadow-inner">
+            <h3 class="font-semibold text-xl mb-3 text-blue-700 flex items-center gap-2">
+                🤖 AI Analysis Result
+            </h3>
+            <p class="text-lg font-bold text-gray-800">
+                Your Score: <span id="score" class="text-blue-700">--</span>/100
+            </p>
+            <p id="feedback" class="mt-2 text-gray-700"></p>
+
+            <p id="badgeMessage" class="mt-3 font-semibold"></p>
+        </div>
+
+        <!-- Tips for Improvement -->
+        <div id="tipsContainer" class="hidden bg-yellow-50 p-5 rounded-xl border border-yellow-200">
+            <h3 class="font-semibold text-xl mb-3 text-yellow-700">📈 Personalized Tips</h3>
+            <ul id="tipsList" class="list-disc list-inside space-y-1 text-gray-700"></ul>
+        </div>
+
+        <!-- Leaderboard -->
+        <div id="leaderboardContainer" class="hidden bg-gray-50 p-5 rounded-xl border border-gray-300">
+            <h3 class="font-semibold text-xl mb-3 text-gray-700">🏆 Leaderboard</h3>
+            <table class="table-auto w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-gray-200">
+                        <th class="p-2">Rank</th>
+                        <th class="p-2">Name</th>
+                        <th class="p-2">Score</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard"></tbody>
+            </table>
+        </div>
+
+        <!-- Share + Download Section -->
+        <div class="text-center mt-6 space-y-4">
+            <p class="text-gray-700 font-medium">Share your achievement 🎉 or Download your report 📄</p>
+
+            <div class="flex flex-wrap justify-center gap-4">
+                <a id="shareWhatsApp" target="_blank"
+                   class="bg-green-500 text-white px-4 py-2 rounded-xl shadow hover:bg-green-600 transition">
+                    📲 WhatsApp
+                </a>
+
+                <a id="shareTwitter" target="_blank"
+                   class="bg-blue-500 text-white px-4 py-2 rounded-xl shadow hover:bg-blue-600 transition">
+                    🐦 Twitter
+                </a>
+
+                <a id="downloadPDF"
+                   class="bg-red-500 text-white px-4 py-2 rounded-xl shadow hover:bg-red-600 transition">
+                    📄 Download PDF
+                </a>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="text-center mt-6">
+            <a href="/upload_page"
+               class="inline-block bg-blue-600 text-white px-6 py-2 rounded-xl shadow hover:bg-blue-700 transition">
+                Upload Another Talent 🎥
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+async function fetchResults() {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    document.getElementById("loading").classList.add("hidden");
+    document.getElementById("error").textContent = "🚫 Please log in to view results.";
+    document.getElementById("error").classList.remove("hidden");
+    return;
+  }
+
+  try {
+    const res = await fetch("/api/results", {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.msg || "Failed to load results");
+
+    // Hide loader and show results
+    document.getElementById("loading").classList.add("hidden");
+    document.getElementById("results").classList.remove("hidden");
+
+    // Fill in data
+    if (data.file_url) {
+      document.getElementById("videoSource").src = data.file_url;
+      document.getElementById("videoContainer").classList.remove("hidden");
+    }
+
+    document.getElementById("score").textContent = data.score;
+    document.getElementById("feedback").textContent = data.ai_feedback;
+
+    // Badge logic
+    const badgeMsg = document.getElementById("badgeMessage");
+    if (data.score >= 90) {
+      badgeMsg.textContent = "🏆 Excellent! You earned a Gold Badge!";
+      badgeMsg.className = "text-green-700 font-semibold";
+    } else if (data.score >= 75) {
+      badgeMsg.textContent = "⭐ Great job! You earned a Silver Badge!";
+      badgeMsg.className = "text-yellow-700 font-semibold";
+    } else {
+      badgeMsg.textContent = "💪 Keep practicing — you're improving every step!";
+      badgeMsg.className = "text-gray-600";
+    }
+
+    // Tips
+    if (data.improvement_tips && data.improvement_tips.length > 0) {
+      document.getElementById("tipsContainer").classList.remove("hidden");
+      document.getElementById("tipsList").innerHTML =
+        data.improvement_tips.map(tip => `<li>${tip}</li>`).join("");
+    }
+
+    // Leaderboard
+    if (data.leaderboard && data.leaderboard.length > 0) {
+      document.getElementById("leaderboardContainer").classList.remove("hidden");
+      document.getElementById("leaderboard").innerHTML =
+        data.leaderboard.map(player => `
+          <tr class="border-t hover:bg-gray-100 transition">
+            <td class="p-2 font-bold">${player.rank}</td>
+            <td class="p-2">${player.name}</td>
+            <td class="p-2">${player.score}</td>
+          </tr>`).join("");
+    }
+
+    // Share links
+    document.getElementById("shareWhatsApp").href =
+      `https://wa.me/?text=I just scored ${data.score}/100 on SkillShine! 🚀 Check it out here: ${window.location.origin}`;
+    document.getElementById("shareTwitter").href =
+      `https://twitter.com/intent/tweet?text=I just scored ${data.score}/100 on SkillShine! 🚀 Try it yourself: ${window.location.origin}`;
+    document.getElementById("downloadPDF").href =
+      `/download_pdf?score=${data.score}&feedback=${encodeURIComponent(data.ai_feedback)}`;
+
+  } catch (err) {
+    console.error("Error fetching results:", err);
+    document.getElementById("loading").classList.add("hidden");
+    document.getElementById("error").textContent = "⚠️ Failed to load results. Please try again.";
+    document.getElementById("error").classList.remove("hidden");
+  }
+}
+
+fetchResults();
+</script>
+{% endblock %}
